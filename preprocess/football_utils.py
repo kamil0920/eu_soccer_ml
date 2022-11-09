@@ -1,4 +1,4 @@
-import pandas as pd
+import logging
 import xml.etree.cElementTree as et
 
 import pandas as pd
@@ -6,6 +6,7 @@ import pandas as pd
 logger = logging.getLogger()
 logger.setLevel(logging.ERROR)
 logging.debug("test")
+
 
 def process_xml_columns(df_new_cols, cols, match, xml_col):
     path = match[xml_col]
@@ -26,6 +27,7 @@ def process_xml_columns(df_new_cols, cols, match, xml_col):
             return df
         except Exception as e:
             print(e)
+
 
 def create_new_df_from_xml(df, xml_column, df_cols, df_new_cols):
     new_df = pd.DataFrame()
@@ -86,15 +88,17 @@ def get_points(row, team):
         else:
             return 1
 
+
 from sklearn.feature_selection import SelectKBest
 
 
 # for chi-squared feature selection
 def select_KBest(X, y, criteria, k):
     selector = SelectKBest(criteria, k=k)
-    selector.fit_transform(X,y)
-    X = X[[val for i,val in enumerate(X.columns) if selector.get_support()[i]]]
+    selector.fit_transform(X, y)
+    X = X[[val for i, val in enumerate(X.columns) if selector.get_support()[i]]]
     return X
+
 
 # create home_winner
 def preprocess_category_string(category_row):
@@ -102,6 +106,7 @@ def preprocess_category_string(category_row):
         return 'yes'
     else:
         return 'no'
+
 
 def preprocess_if_bet_placed_well(X, colH, colD, colA):
     # print(f'B365H: {X.colH}, colD: {X.B365D}, colA: {X.B365A}, result: {X.result_match} ')
@@ -113,6 +118,7 @@ def preprocess_if_bet_placed_well(X, colH, colD, colA):
         return True
     else:
         return False
+
 
 def get_result_name(short_name):
     if short_name == 'H':
@@ -126,11 +132,13 @@ def get_result_name(short_name):
 def get_bookmaker_type(short_name):
     return [short_name[:-1], short_name[-1]]
 
+
 def aggregate_bookmarks_bets(X, colH, colD, colA):
     new_df = pd.DataFrame(columns=['bookmaker', 'type', 'good_bet', 'wrong_bet'])
     df_ = X.copy()
 
-    df_['bet_vs_result'] = X[[colH, colD, colA, 'result_match']].apply(lambda x: preprocess_if_bet_placed_well(x, colH, colD, colA), axis=1)
+    df_['bet_vs_result'] = X[[colH, colD, colA, 'result_match']].apply(
+        lambda x: preprocess_if_bet_placed_well(x, colH, colD, colA), axis=1)
 
     logger.debug(f"len new col: {df_['bet_vs_result'].value_counts()}")
 
@@ -149,20 +157,23 @@ def aggregate_bookmarks_bets(X, colH, colD, colA):
         new_df = pd.concat([new_df, frame])
     return new_df
 
+
 def check_streak_with_win_probability(X, colH, colA):
     # print(f'colH: {X.get(colH)}\ncolA: {X.get(colA)}\n')
-    if ((X.get(colH) > X.get(colA)) & (X.get('result_match') == 'H')) |\
-            ((X.get(colH) < X.get(colA)) & (X.get('result_match') == 'A')) |\
+    if ((X.get(colH) > X.get(colA)) & (X.get('result_match') == 'H')) | \
+            ((X.get(colH) < X.get(colA)) & (X.get('result_match') == 'A')) | \
             ((X.get(colH) == X.get(colA)) & (X.get('result_match') == 'D')):
         return True
     else:
         return False
 
+
 def aggregate_streaks(X, colH, colA):
-    new_df = pd.DataFrame(columns=[ 'type', 'good_streak', 'wrong_streak'])
+    new_df = pd.DataFrame(columns=['type', 'good_streak', 'wrong_streak'])
     df_ = X.copy()
 
-    df_['streak_vs_result'] = X[[colH, colA, 'result_match']].apply(lambda x: check_streak_with_win_probability(x, colH, colA), axis=1)
+    df_['streak_vs_result'] = X[[colH, colA, 'result_match']].apply(
+        lambda x: check_streak_with_win_probability(x, colH, colA), axis=1)
 
     logger.debug(f"len new col: {df_['streak_vs_result'].value_counts()}")
 
@@ -179,4 +190,3 @@ def aggregate_streaks(X, colH, colA):
         frame = pd.DataFrame(dict_, index=[0])
         new_df = pd.concat([new_df, frame])
     return new_df
-
