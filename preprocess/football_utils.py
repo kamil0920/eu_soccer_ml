@@ -52,6 +52,9 @@ def fill_nan_goals(df, col1, col2):
             df.loc[df.match_api_id == row.match_api_id, col2] = round(avg_mean)
         else:
             df.loc[df.match_api_id == row.match_api_id, col1] = 0
+
+    df.lm_goals_home = df.lm_goals_home.astype(int)
+    df.lm_goals_away = df.lm_goals_away.astype(int)
     return df
 
 
@@ -65,7 +68,7 @@ def missing_values(df):
 def get_winner(row):
     if row['result_match'] == 'H':
         m_winner = row['home_team']
-    elif row['home_team_goal'] == 'D':
+    elif row['result_match'] == 'D':
         m_winner = 'Draw'
     else:
         m_winner = row['away_team']

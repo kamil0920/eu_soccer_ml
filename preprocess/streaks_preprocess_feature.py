@@ -33,6 +33,9 @@ def count_streak_wins(X, teams):
                 else:
                     df.loc[
                         df['match_api_id'] == row['match_api_id'], 'streak_wa'] = win_counter
+
+        df.streak_wh = df.streak_wh.astype(int)
+        df.streak_wa = df.streak_wa.astype(int)
         return df
     except Exception:
         traceback.print_exc()
@@ -70,6 +73,9 @@ def count_streak_lose(X, teams):
                     df.loc[df['match_api_id'] == row['match_api_id'], 'streak_lh'] = lose_counter
                 else:
                     df.loc[df['match_api_id'] == row['match_api_id'], 'streak_la'] = lose_counter
+
+        df.streak_la = df.streak_la.astype(int)
+        df.streak_lh = df.streak_lh.astype(int)
         return df
     except Exception:
         traceback.print_exc()
