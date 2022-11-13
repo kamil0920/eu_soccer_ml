@@ -1,6 +1,7 @@
 import traceback
 
 import numpy as np
+import pandas as pd
 
 from preprocess import football_utils
 
@@ -97,3 +98,35 @@ def count_points(X, teams):
     except Exception:
         traceback.print_exc()
         print('An error occurred')
+
+
+def aggregate_result_match_points(X, colH, colA):
+    new_df = pd.DataFrame(columns=['type', 'good_points', 'wrong_points'])
+    df_ = X.copy()
+
+    df_['points_vs_result'] = X[[colH, colA, 'result_match']].apply(
+        lambda x: check_bets_with_win_probability(x, colH, colA), axis=1)
+
+    df_group = df_.groupby(by=['result_match', 'points_vs_result'], )['points_vs_result'].count()
+    uniques = df_group.index.get_level_values(0).unique()
+
+    for i in list(uniques):
+        df_single = df_group.get(i)
+        dict_ = {
+            'type': i,
+            'good_points': df_single[0],
+            'wrong_points': df_single[1]
+        }
+        frame = pd.DataFrame(dict_, index=[0])
+        new_df = pd.concat([new_df, frame])
+    return new_df
+
+
+def check_bets_with_win_probability(X, colH, colA):
+    # print(f'colH: {X.get(colH)}\ncolA: {X.get(colA)}\n')
+    if ((X.get(colH) > X.get(colA)) & (X.get('result_match') == 'H')) | \
+            ((X.get(colH) < X.get(colA)) & (X.get('result_match') == 'A')) | \
+            ((X.get(colH) == X.get(colA)) & (X.get('result_match') == 'D')):
+        return True
+    else:
+        return False
