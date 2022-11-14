@@ -1,8 +1,10 @@
+import logging
 import traceback
 
 import numpy as np
 import pandas as pd
 
+logger = logging.getLogger(__name__)
 
 def count_last_match_goals(X, teams):
     df = X.copy()

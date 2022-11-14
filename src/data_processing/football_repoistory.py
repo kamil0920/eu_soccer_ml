@@ -1,7 +1,9 @@
+import logging
 import sqlite3 as db
 
 import pandas as pd
 
+logger = logging.getLogger(__name__)
 
 def load_and_chunk_data():
     conn = db.connect('eu_soccer_database/database.sqlite')

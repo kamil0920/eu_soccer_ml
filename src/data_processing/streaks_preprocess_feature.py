@@ -1,4 +1,7 @@
+import logging
 import traceback
+
+logger = logging.getLogger(__name__)
 
 
 def count_streak_wins(X, teams):

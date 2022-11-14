@@ -1,9 +1,12 @@
+import logging
 import traceback
 
 import numpy as np
 import pandas as pd
 
-from preprocess import football_utils
+from src.data_processing import football_utils
+
+logger = logging.getLogger(__name__)
 
 
 def count_average_points_from_n_last_matches(X, teams, n=5):

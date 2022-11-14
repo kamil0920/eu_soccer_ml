@@ -3,10 +3,7 @@ import xml.etree.cElementTree as et
 
 import pandas as pd
 
-logger = logging.getLogger()
-logger.setLevel(logging.ERROR)
-logging.debug("test")
-
+logger = logging.getLogger(__name__)
 
 def process_xml_columns(df_new_cols, cols, match, xml_col):
     path = match[xml_col]

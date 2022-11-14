@@ -1,9 +1,11 @@
+import logging
 import traceback
 
 import pandas as pd
 
-from preprocess import football_utils
+from src.data_processing import football_utils
 
+logger = logging.getLogger(__name__)
 
 def get_last_match_winner(X):
     try:

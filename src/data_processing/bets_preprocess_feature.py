@@ -1,5 +1,7 @@
+import logging
 import traceback
 
+logger = logging.getLogger(__name__)
 
 def fill_nan_bets(X):
     df = X.copy()

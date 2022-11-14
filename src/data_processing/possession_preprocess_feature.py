@@ -1,9 +1,12 @@
+import logging
 import traceback
 
 import numpy as np
 import pandas as pd
 
-from preprocess.football_utils import create_new_df_from_xml
+from src.data_processing.football_utils import create_new_df_from_xml
+
+logger = logging.getLogger(__name__)
 
 
 def xml_to_feature_possession(X):
@@ -103,4 +106,3 @@ def get_last_match_possession(X, teams):
     except Exception:
         traceback.print_exc()
         print('An error occurred')
-
