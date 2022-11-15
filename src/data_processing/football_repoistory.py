@@ -1,12 +1,18 @@
 import logging
 import sqlite3 as db
+from pathlib import PureWindowsPath
 
 import pandas as pd
 
 logger = logging.getLogger(__name__)
 
+ROOT_DIR = PureWindowsPath(__file__).parent.parent.parent # This is your Project Root
+DB_DIR = '/eu_soccer_database'
+CHUNK_DIR = '/chunk_data'
+
 def load_and_chunk_data():
-    conn = db.connect('eu_soccer_database/database.sqlite')
+    db_path = r"{ROOT_DIR}/{DB_DIR}/database.sqlite".format(ROOT_DIR=ROOT_DIR, DB_DIR=DB_DIR).replace('\\', '/')
+    conn = db.connect(db_path)
     chunk_size = 5000
     batch_no = 1
     for chunk in pd.read_sql("SELECT m.match_api_id,"
@@ -51,5 +57,8 @@ def load_and_chunk_data():
                              " WHERE League.id IN (1729, 4769, 7809, 10257, 21518)"
                              " AND m.possession IS NOT NULL"
                              " ORDER by date;", conn, chunksize=chunk_size):
-        chunk.to_csv('chunk_data/chunk' + str(batch_no) + '.csv', index=False)
+
+        chunk_path = r"{ROOT_DIR}{CHUNK_DIR}/".format(ROOT_DIR=ROOT_DIR, CHUNK_DIR=CHUNK_DIR).replace('\\', '/')
+        chunk.to_csv(chunk_path + 'chunk_' + str(batch_no) + '.csv', index=False)
+        logger.info(f'Number of chunks: {batch_no}')
         batch_no += 1
