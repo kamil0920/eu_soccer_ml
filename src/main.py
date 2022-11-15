@@ -24,6 +24,8 @@ LOG_DIR = "/logs"
 CHUNK_DIR = '/chunk_data'
 REPORT_DIR = '/report'
 
+N_LAST_MATCHES = 5
+
 
 def setup_logging():
     """Load logging configuration"""
@@ -77,7 +79,6 @@ if __name__ == "__main__":
     df_detailed_matches = football_utils.fill_nan_goals(df_detailed_matches, 'lm_goals_home', 'lm_goals_away')
 
     logger.debug("Count average goals team get in last n matches.")
-    N_LAST_MATCHES = 5
     df_detailed_matches = goals_preprocess_feature.count_average_goals_from_last_n_matches(df_detailed_matches, teams, n=N_LAST_MATCHES)
     df_detailed_matches = football_utils.fill_nan_goals(df_detailed_matches, f'avg_l{N_LAST_MATCHES}m_h', f'avg_l{N_LAST_MATCHES}m_hh')
     df_detailed_matches = football_utils.fill_nan_goals(df_detailed_matches, f'avg_l{N_LAST_MATCHES}m_a', f'avg_l{N_LAST_MATCHES}m_aa')
@@ -106,9 +107,9 @@ if __name__ == "__main__":
     df_detailed_matches = points_preprocess_feature.count_points(df_detailed_matches, teams)
 
     logger.debug("Count team average points from n last matches.")
-    df_detailed_matches = points_preprocess_feature.count_average_points_from_n_last_matches(df_detailed_matches, teams)
+    df_detailed_matches = points_preprocess_feature.count_average_points_from_n_last_matches(df_detailed_matches, teams, n=N_LAST_MATCHES)
     df_avg_goals_nan = df_detailed_matches.loc[
-        (df_detailed_matches['avg_points_l5m_h'].isna()) | (df_detailed_matches['avg_points_l5m_a'].isna())]
+        (df_detailed_matches[f'avg_points_l{N_LAST_MATCHES}m_h'].isna()) | (df_detailed_matches[f'avg_points_l{N_LAST_MATCHES}m_a'].isna())]
     df_detailed_matches = points_preprocess_feature.fill_nan_average_points(df_detailed_matches, df_avg_goals_nan)
 
     logger.debug("Filling in missing bets data.")
