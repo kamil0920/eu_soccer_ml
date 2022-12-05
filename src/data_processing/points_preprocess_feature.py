@@ -133,3 +133,39 @@ def check_bets_with_win_probability(X, colH, colA):
         return True
     else:
         return False
+
+
+# df_.loc[df_.match_api_id == 489057, ['B365H', 'B365D', 'B365A', 'points_home', 'points_away', 'home_team_goal', 'away_team_goal', 'points_vs_book_bet', 'result_match']]
+
+# def aggregate_result_match_points(X, colH, colA, betH, betD, betA):
+#     new_df = pd.DataFrame(columns=['type', 'good_points', 'wrong_points'])
+#     df_ = X.copy()
+#
+#     df_['points_vs_book_bet'] = X[[colH, colA, betH, betD, betA, 'result_match']].apply(
+#         lambda x: check_bets_with_win_probability(x, colH, colA, betH, betD, betA), axis=1)
+#
+#     df_group = df_.groupby(by=['result_match', 'points_vs_book_bet'], )['points_vs_book_bet'].count()
+#     uniques = df_group.index.get_level_values(0).unique()
+#
+#     for i in list(uniques):
+#         df_single = df_group.get(i)
+#         dict_ = {
+#             'type': i,
+#             'good_points': df_single[0],
+#             'wrong_points': df_single[1]
+#         }
+#         frame = pd.DataFrame(dict_, index=[0])
+#         new_df = pd.concat([new_df, frame])
+#     return new_df
+#
+#
+# def check_bets_with_win_probability(X, colH, colA, betH, betD, betA):
+#     # print(f'colH: {X.get(colH)}\ncolA: {X.get(colA)}\n')
+#     book_bet = X.loc[[betH, betD, betA]].astype('float').idxmin()
+#
+#     if ((X.get(colH) > X.get(colA)) & ('H' in book_bet)) | \
+#             ((X.get(colH) < X.get(colA)) & ('A' in book_bet)) | \
+#             ((X.get(colH) == X.get(colA)) & ('D' in book_bet)):
+#         return True
+#     else:
+#         return False
