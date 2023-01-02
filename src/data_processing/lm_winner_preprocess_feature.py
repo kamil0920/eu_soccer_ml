@@ -7,7 +7,8 @@ from src.data_processing import football_utils
 
 logger = logging.getLogger(__name__)
 
-def get_last_match_winner(X):
+
+def count_victories_against_eachother(X):
     try:
         df = X.copy()
         for index, row in df.iterrows():
@@ -22,13 +23,14 @@ def get_last_match_winner(X):
                 last_match = all_matches_between_teams.loc[
                     all_matches_between_teams['match_api_id'].shift(1) == r['match_api_id']].dropna(how='all')
                 if not last_match.empty:
-                    m_winner = football_utils.get_winner(r)
+                    lm_winner = football_utils.get_winner(r)
                     match_api_id_ = df['match_api_id'] == last_match.iloc[0]['match_api_id']
-                    df.loc[match_api_id_, 'lm_winner'] = m_winner
+                    df.loc[match_api_id_, 'lm_winner'] = lm_winner
         return df
     except Exception:
         traceback.print_exc()
         print('An error occurred')
+
 
 def fill_nan_last_match_winner(X):
     try:
@@ -43,14 +45,23 @@ def fill_nan_last_match_winner(X):
                     df['away_team'] == home_team)) & ((df['home_team'] == away_team) | (df['away_team'] == away_team))
 
             all_matches_between_teams = df.loc[mask_all_matches_between_teams]
-            all_matches_between_teams = all_matches_between_teams.sort_values(by='date')
 
-            lm_winner = all_matches_between_teams.mode()['lm_winner'][0]
-            if pd.isna(lm_winner):
-                lm_winner = football_utils.get_winner(row)
-            df.loc[df['match_api_id'] == row['match_api_id'], 'lm_winner'] = lm_winner
+            if all_matches_between_teams.lm_winner.value_counts().size != 0:
+                lm_winner = all_matches_between_teams.lm_winner.value_counts().idxmax()
+                if pd.isna(lm_winner):
+                    lm_winner = football_utils.get_winner(row)
+                df.loc[df['match_api_id'] == row['match_api_id'], 'lm_winner'] = lm_winner
+            else:
+                if df['points_home'] > df['points_away']:
+                    lm_winner = df['home_team']
+                    df.loc[df['match_api_id'] == row['match_api_id'], 'lm_winner'] = lm_winner
+                elif df['points_home'] < df['points_away']:
+                    lm_winner = df['home_team']
+                    df.loc[df['match_api_id'] == row['match_api_id'], 'lm_winner'] = lm_winner
+                else:
+                    df.loc[df['match_api_id'] == row['match_api_id'], 'lm_winner'] = 0
 
-        df.lm_winner = df.lm_winner.astype('category')
+        df.lm_winner = df.lm_winner.astype('int')
         return df
     except Exception:
         traceback.print_exc()

@@ -62,13 +62,13 @@ def count_average_goals_from_last_n_matches(X, teams, n=5):
                 if team == row['home_team']:
                     if pd.isna(avg_l5m_hh):
                         avg_l5m_hh = row['home_team_goal']
-                    df.loc[df['match_api_id'] == row['match_api_id'], 'avg_l5m_hh'] = avg_l5m_hh
-                    df.loc[df['match_api_id'] == row['match_api_id'], 'avg_l5m_h'] = avg_l5_m
+                    df.loc[df['match_api_id'] == row['match_api_id'], f'avg_l{n}m_hh'] = avg_l5m_hh
+                    df.loc[df['match_api_id'] == row['match_api_id'], f'avg_l{n}m_h'] = avg_l5_m
                 else:
                     if pd.isna(avg_l5m_aa):
                         avg_l5m_aa = row['away_team_goal']
-                    df.loc[df['match_api_id'] == row['match_api_id'], 'avg_l5m_aa'] = avg_l5m_aa
-                    df.loc[df['match_api_id'] == row['match_api_id'], 'avg_l5m_a'] = avg_l5_m
+                    df.loc[df['match_api_id'] == row['match_api_id'], f'avg_l{n}m_aa'] = avg_l5m_aa
+                    df.loc[df['match_api_id'] == row['match_api_id'], f'avg_l{n}m_a'] = avg_l5_m
         return df
     except Exception:
         traceback.print_exc()

@@ -35,7 +35,8 @@ def count_days_since_last_match(X, teams):
 
         df.days_since_lma = df.days_since_lma.astype(int)
         df.days_since_lmh = df.days_since_lmh.astype(int)
-        return df
+
+        return df.loc[(df.days_since_lma < 50) & (df.days_since_lmh < 50)]
     except Exception:
         traceback.print_exc()
         print('An error occurred')
