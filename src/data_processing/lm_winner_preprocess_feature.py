@@ -8,7 +8,7 @@ from src.data_processing import football_utils
 logger = logging.getLogger(__name__)
 
 
-def count_victories_against_eachother(X):
+def get_last_match_winner(X):
     try:
         df = X.copy()
         for index, row in df.iterrows():
@@ -52,14 +52,15 @@ def fill_nan_last_match_winner(X):
                     lm_winner = football_utils.get_winner(row)
                 df.loc[df['match_api_id'] == row['match_api_id'], 'lm_winner'] = lm_winner
             else:
-                if df['points_home'] > df['points_away']:
-                    lm_winner = df['home_team']
-                    df.loc[df['match_api_id'] == row['match_api_id'], 'lm_winner'] = lm_winner
-                elif df['points_home'] < df['points_away']:
-                    lm_winner = df['home_team']
-                    df.loc[df['match_api_id'] == row['match_api_id'], 'lm_winner'] = lm_winner
+                match = df.loc[df['match_api_id'] == row['match_api_id']]
+                if match.points_home.gt(match['points_away']).values[0]:
+                    lm_winner = match['home_team'].values[0]
+                    df.loc[df.match_api_id.isin(match.match_api_id), 'lm_winner'] = lm_winner
+                elif match.points_home.lt(match['points_away']).values[0]:
+                    lm_winner = match['away_team'].values[0]
+                    df.loc[df.match_api_id.isin(match.match_api_id), 'lm_winner'] = lm_winner
                 else:
-                    df.loc[df['match_api_id'] == row['match_api_id'], 'lm_winner'] = 0
+                    df.loc[df.match_api_id.isin(match.match_api_id), 'lm_winner'] = 0
 
         df.lm_winner = df.lm_winner.astype('int')
         return df

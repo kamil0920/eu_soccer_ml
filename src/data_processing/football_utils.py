@@ -80,9 +80,9 @@ def get_points(row, team):
         else:
             return 1
     else:
-        if row['home_team_goal'] == 'H':
+        if row['result_match'] == 'H':
             return 0
-        elif row['home_team_goal'] == 'A':
+        elif row['result_match'] == 'A':
             return 3
         else:
             return 1
