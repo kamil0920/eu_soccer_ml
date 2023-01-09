@@ -33,8 +33,8 @@ def count_last_match_goals(X, teams):
 
 
 def count_average_goals_from_last_n_matches(X, teams, n=5):
-    df = X.copy()
     try:
+        df = X.copy()
         for team in teams:
             mask_find_team_matches = (df['home_team'] == team) | (
                     df['away_team'] == team)
